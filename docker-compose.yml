@@ -1,0 +1,108 @@
+# https://www.elastic.co/guide/en/elasticsearch/reference/7.17/docker.html
+# https://www.elastic.co/guide/en/kibana/7.17/docker.html
+# https://github.com/p404/jaeger-elasticsearch-compose/blob/master/docker-compose.yml
+# https://www.jaegertracing.io/docs/1.47/deployment/
+version: "3.7"
+services:
+  elasticsearch:
+    image: docker.elastic.co/elasticsearch/elasticsearch:7.17.11
+    container_name: elasticsearch
+    restart: always
+    environment:
+      - xpack.security.enabled=false
+      - discovery.type=single-node
+    ulimits:
+      memlock:
+        soft: -1
+        hard: -1
+      nofile:
+        soft: 65536
+        hard: 65536
+    cap_add:
+      - IPC_LOCK
+    volumes:
+      - ./elasticsearch-data:/usr/share/elasticsearch/data
+    ports:
+      - 9200:9200
+  kibana:
+    container_name: kibana
+    image: docker.elastic.co/kibana/kibana:7.17.11
+    restart: always
+    environment:
+      - ELASTICSEARCH_HOSTS=http://elasticsearch:9200    # address of elasticsearch docker container which kibana will connect
+    ports:
+      - 5601:5601
+    depends_on:
+      - elasticsearch
+  jaeger-collector:
+    container_name: jaeger-collector
+    image: jaegertracing/jaeger-collector:1.47
+    restart: always
+    environment:
+      - SPAN_STORAGE_TYPE=elasticsearch
+      - ES_SERVER_URLS=http://elasticsearch:9200
+      - COLLECTOR_OTLP_ENABLED=true
+    ports:
+      - 4317:4317 # gRPC when collector.otlp.enabled=true
+      - 14269:14269 # Admin port: health check at / and metrics at /metrics.
+    depends_on:
+      - elasticsearch
+  jaeger-query:
+    container_name: jaeger-query
+    image: jaegertracing/jaeger-query:1.47
+    restart: always
+    environment:
+      - SPAN_STORAGE_TYPE=elasticsearch
+      - ES_SERVER_URLS=http://elasticsearch:9200
+    ports:
+    - 16685:16685
+    - 16686:16686 # /api/* endpoints and Jaeger UI at /
+    - 16687:16687 # admin port: health check at / and metrics at /metrics
+    depends_on:
+      - elasticsearch
+  minispy-server:
+    container_name: minispy-server
+    image: minispyserver:latest
+    restart: always
+    environment:
+      - ES_SERVER_URLS=http://elasticsearch:9200
+      - JAEGERCOLLECTOR_URL=http://jaeger-collector:4317
+    ports:
+    - 50051:50051
+    depends_on:
+      - elasticsearch
+  usnmonitor-server:
+    container_name: usnmonitor-server
+    image: usnmonitorserver:latest
+    restart: always
+    environment:
+      - ES_SERVER_URLS=http://elasticsearch:9200
+      - JAEGERCOLLECTOR_URL=http://jaeger-collector:4317
+    ports:
+    - 50052:50052
+    depends_on:
+      - elasticsearch
+  mimic-agent-server:
+    container_name: mimic-agent-server
+    image: mimicagentserver:latest
+    restart: always
+    environment:
+      - ES_SERVER_URLS=http://elasticsearch:9200
+      - JAEGERCOLLECTOR_URL=http://jaeger-collector:4317
+    ports:
+    - 50053:50053
+    depends_on:
+      - elasticsearch
+  mimicwindows-server:
+    container_name: mimicwindows-server
+    image: mimicwindowsserver:latest
+    restart: always
+    environment:
+      - ES_SERVER_URLS=http://elasticsearch:9200
+      - JAEGERCOLLECTOR_URL=http://jaeger-collector:4317
+    ports:
+    - 50055:50055
+    depends_on:
+      - elasticsearch
+
+
