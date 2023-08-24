@@ -8,6 +8,8 @@ For a list of dependencies, please refer to [vcpkg.json](vcpkg.json).
 
 ## Install vcpkg
 ```sh
+sudo apt-get update
+sudo apt-get upgrade -y
 sudo apt-get install -y git curl zip unzip tar pkg-config clang-tidy cppcheck cmake build-essential ninja-build
 git clone https://github.com/Microsoft/vcpkg.git
 ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
