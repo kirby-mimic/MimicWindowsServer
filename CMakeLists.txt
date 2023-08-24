@@ -13,34 +13,61 @@ project(
 include(cmake/project-is-top-level.cmake)
 include(cmake/variables.cmake)
 
-# ---- Declare library ----
+# enable FetchContent
+include(FetchContent)
 
-add_library(
-    MimicWindowsServer_lib OBJECT
-    source/lib.cpp
+FetchContent_Declare(protobufs                              # name of the content
+  GIT_REPOSITORY https://github.com/kirby-mimic/protobufs.git   # the repository
+  GIT_TAG        ProtobufTest                                       # the tag
+  GIT_PROGRESS TRUE
 )
+FetchContent_MakeAvailable(protobufs)
 
-target_include_directories(
-    MimicWindowsServer_lib ${warning_guard}
-    PUBLIC
-    "$<BUILD_INTERFACE:${PROJECT_SOURCE_DIR}/source>"
-)
+add_definitions(-D_UNICODE -DUNICODE -DCURL_STATICLIB -DWIN32 -DPSAPI_VERSION=1 -D_WIN32_DCOM -D_CRT_SECURE_NO_WARNINGS)
 
-target_compile_features(MimicWindowsServer_lib PUBLIC cxx_std_17)
 
+find_package(Protobuf CONFIG REQUIRED)
+find_package(gRPC CONFIG REQUIRED)
+find_package(Threads)
+find_package(prometheus-cpp CONFIG REQUIRED)
+find_package(opentelemetry-cpp CONFIG REQUIRED)
+find_package(sentry CONFIG REQUIRED)
 find_package(fmt REQUIRED)
-target_link_libraries(MimicWindowsServer_lib PRIVATE fmt::fmt)
+find_package(nlohmann_json CONFIG REQUIRED)
+find_package(CLI11 CONFIG REQUIRED)
+find_package(cpr CONFIG REQUIRED)
+
+message(STATUS "Using gRPC ${gRPC_VERSION}")
+message(STATUS "Using Protobuf ${Protobuf_VERSION}")
+message(STATUS "Using OpenTelemetry-cpp ${opentelemetry-cpp_VERSION}")
+message(STATUS "Using sentry-native ${sentry_VERSION}")
+message(STATUS "protobufs target include directories: ${protobufs_BINARY_DIR}")
+
+# ---- Declare library ----
 
 # ---- Declare executable ----
 
-add_executable(MimicWindowsServer_exe source/main.cpp)
+add_executable(MimicWindowsServer_exe source/server.cpp
+source/elastic_client.cpp)
 add_executable(MimicWindowsServer::exe ALIAS MimicWindowsServer_exe)
 
 set_property(TARGET MimicWindowsServer_exe PROPERTY OUTPUT_NAME MimicWindowsServer)
 
 target_compile_features(MimicWindowsServer_exe PRIVATE cxx_std_17)
 
-target_link_libraries(MimicWindowsServer_exe PRIVATE MimicWindowsServer_lib)
+target_include_directories(MimicWindowsServer_exe PRIVATE ${protobufs_BINARY_DIR}/protos/MimicWindows)
+
+target_link_libraries(MimicWindowsServer_exe PRIVATE
+    MimicWindows
+    opentelemetry-cpp::trace
+    opentelemetry-cpp::otlp_grpc_exporter
+    opentelemetry-cpp::ostream_span_exporter
+    opentelemetry-cpp::otlp_grpc_metrics_exporter
+    fmt::fmt
+    nlohmann_json::nlohmann_json
+    CLI11::CLI11
+    cpr::cpr
+)
 
 # ---- Install rules ----
 

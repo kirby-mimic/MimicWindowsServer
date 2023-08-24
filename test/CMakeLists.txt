@@ -14,7 +14,6 @@ include(Catch)
 add_executable(MimicWindowsServer_test source/MimicWindowsServer_test.cpp)
 target_link_libraries(
     MimicWindowsServer_test PRIVATE
-    MimicWindowsServer_lib
     Catch2::Catch2WithMain
 )
 target_compile_features(MimicWindowsServer_test PRIVATE cxx_std_17)
