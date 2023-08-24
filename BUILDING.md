@@ -33,13 +33,7 @@ source ~/.bashrc
 echo $VCPKG_ROOT
 /home/user/vcpkg
 ```
-# Build MimicWindowsServer
-```sh
-git clone git@github.com:kirby-mimic/MimicWindowsServer.git
-cd MimicWindowsServer
-cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=$HOME/vcpkg/scripts/buildsystems/vcpkg.cmake
-cmake --build build
-```
+
 
 ## Git Credential Manager
 To access the protobufs repository, you will need to configure a github personal access token.
@@ -47,11 +41,20 @@ To access the protobufs repository, you will need to configure a github personal
 - [Install Git Credential Manager](https://github.com/git-ecosystem/git-credential-manager/blob/release/docs/install.md)
 
 ## For Linux, it is recommended to use pass
+[Create GitHub Classic Personal Access Token](https://docs.github.com/en/authentication/keeping-your-account-and-data-secure/managing-your-personal-access-tokens)
 ```sh
 sudo apt-get install pass
 gpg --list-secret-keys --keyid-format LONG
 pass init <key-id>
 git config --global credential.credentialStore gpg
+```
+
+# Build MimicWindowsServer
+```sh
+git clone git@github.com:kirby-mimic/MimicWindowsServer.git
+cd MimicWindowsServer
+cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=$HOME/vcpkg/scripts/buildsystems/vcpkg.cmake
+cmake --build build
 ```
 
 ## Build MimicWindowsServer
