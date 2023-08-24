@@ -10,7 +10,7 @@ For a list of dependencies, please refer to [vcpkg.json](vcpkg.json).
 ```sh
 sudo apt-get update
 sudo apt-get upgrade -y
-sudo apt-get install -y git curl zip unzip tar pkg-config clang-tidy cppcheck cmake build-essential ninja-build
+sudo apt-get install -y git curl zip unzip tar pkg-config clang-tidy cppcheck cmake build-essential ninja-build pass
 git clone https://github.com/Microsoft/vcpkg.git
 ./vcpkg/bootstrap-vcpkg.sh -disableMetrics
 ./vcpkg/vcpkg integrate install
@@ -34,6 +34,10 @@ echo $VCPKG_ROOT
 /home/user/vcpkg
 ```
 
+## If you don't already have a gpg key
+```sh
+gpg --full-generate-key
+```
 
 ## Git Credential Manager
 To access the protobufs repository, you will need to configure a github personal access token.
