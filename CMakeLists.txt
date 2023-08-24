@@ -23,7 +23,7 @@ FetchContent_Declare(protobufs                              # name of the conten
 )
 FetchContent_MakeAvailable(protobufs)
 
-add_definitions(-D_UNICODE -DUNICODE -DCURL_STATICLIB -DWIN32 -DPSAPI_VERSION=1 -D_WIN32_DCOM -D_CRT_SECURE_NO_WARNINGS)
+#add_definitions(-D_UNICODE -DUNICODE -DCURL_STATICLIB -DWIN32 -DPSAPI_VERSION=1 -D_WIN32_DCOM -D_CRT_SECURE_NO_WARNINGS)
 
 
 find_package(Protobuf CONFIG REQUIRED)
