@@ -32,6 +32,11 @@ export VCPKG_FORCE_SYSTEM_BINARIES=1
 source ~/.bashrc
 echo $VCPKG_ROOT
 /home/user/vcpkg
+```
+# Build MimicWindowsServer
+```sh
+git clone git@github.com:kirby-mimic/MimicWindowsServer.git
+cd MimicWindowsServer
 cmake -B build -S . -DCMAKE_TOOLCHAIN_FILE=$HOME/vcpkg/scripts/buildsystems/vcpkg.cmake
 cmake --build build
 ```
