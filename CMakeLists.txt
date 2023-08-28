@@ -18,12 +18,12 @@ include(FetchContent)
 
 FetchContent_Declare(protobufs                              # name of the content
   GIT_REPOSITORY https://github.com/kirby-mimic/protobufs.git   # the repository
-  GIT_TAG        ProtobufTest                                       # the tag
+  GIT_TAG        main                                       # the tag
   GIT_PROGRESS TRUE
 )
 FetchContent_MakeAvailable(protobufs)
 
-#add_definitions(-D_UNICODE -DUNICODE -DCURL_STATICLIB -DWIN32 -DPSAPI_VERSION=1 -D_WIN32_DCOM -D_CRT_SECURE_NO_WARNINGS)
+add_definitions(-D_CRT_SECURE_NO_WARNINGS)
 
 
 find_package(Protobuf CONFIG REQUIRED)
@@ -55,10 +55,10 @@ set_property(TARGET MimicWindowsServer_exe PROPERTY OUTPUT_NAME MimicWindowsServ
 
 target_compile_features(MimicWindowsServer_exe PRIVATE cxx_std_17)
 
-target_include_directories(MimicWindowsServer_exe PRIVATE ${protobufs_BINARY_DIR}/protos/MimicWindows)
+target_include_directories(MimicWindowsServer_exe PRIVATE ${protobufs_BINARY_DIR}/protos/mimicwindows)
 
 target_link_libraries(MimicWindowsServer_exe PRIVATE
-    MimicWindows
+    mimicwindows
     opentelemetry-cpp::trace
     opentelemetry-cpp::otlp_grpc_exporter
     opentelemetry-cpp::ostream_span_exporter

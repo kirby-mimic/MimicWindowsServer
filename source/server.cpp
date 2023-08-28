@@ -15,18 +15,18 @@
 #include "opentelemetry/trace/context.h"
 #include "opentelemetry/trace/semantic_conventions.h"
 #include "opentelemetry/trace/span_context_kv_iterable_view.h"
-#include "MimicWindows.grpc.pb.h"
-#include "MimicWindows.pb.h"
+#include "mimicwindows.grpc.pb.h"
+#include "mimicwindows.pb.h"
 
 #include "tracer_common.h"
 
-class mimicwindows_service final : public MimicWindows::MimicWindowsService::Service
+class mimicwindows_service final : public mimicwindows::MimicService::Service
 {
   elastic_client* m_ec {};
 
-  grpc::Status MimicWindowsUpdate(grpc::ServerContext* context,
-                         grpc::ServerReader<MimicWindows::MessageRequest>* reader,
-                         [[maybe_unused]] MimicWindows::MessageResponse* response) override
+  grpc::Status Update(grpc::ServerContext* context,
+                         grpc::ServerReader<mimicwindows::Request>* reader,
+                         [[maybe_unused]] mimicwindows::Response* response) override
   {
     // Create a SpanOptions object and set the kind to Server to inform OpenTel.
     opentelemetry::trace::StartSpanOptions options;
@@ -41,7 +41,7 @@ class mimicwindows_service final : public MimicWindows::MimicWindowsService::Ser
     auto new_context = prop->Extract(carrier, current_ctx);
     options.parent = opentelemetry::trace::GetSpan(new_context)->GetContext();
 
-    std::string span_name = "MimicWindowsService/MimicWindowsUpdate";
+    std::string span_name = "MimicService/MimicWindowsUpdate";
     auto span = get_tracer("grpc")->StartSpan(
         span_name,
         {{opentelemetry::trace::SemanticConventions::kRpcSystem, "grpc"},
@@ -55,7 +55,7 @@ class mimicwindows_service final : public MimicWindows::MimicWindowsService::Ser
     google::protobuf::util::JsonPrintOptions opts {};
     opts.always_print_primitive_fields = true;
     opts.preserve_proto_field_names = true;
-    MimicWindows::MessageRequest request {};
+    mimicwindows::Request request {};
     while (reader->Read(&request)) {
       google::protobuf::util::MessageToJsonString(request, &json_string, opts);
       m_ec->post_data(json_string);
