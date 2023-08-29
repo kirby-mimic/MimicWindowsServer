@@ -105,7 +105,7 @@ auto elastic_client::post_data(const std::string& json_data) -> int
                   cpr::Header {{"Content-Type", "application/json"}},
                   cpr::Body {json_data});
   }
-  #if 0
+  #if 1
   fmt::print("Status Code: {}\n", response.status_code);
   fmt::print("Status line: {}\n", response.status_line);
   fmt::print("Reason: {}\n", response.reason);

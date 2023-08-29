@@ -10,7 +10,7 @@ class elastic_client
   std::string m_elastic_host {};
   std::string m_user_name {};
   std::string m_password {};
-  std::string m_index {"mimicwindows_index"};
+  std::string m_index {"mimic_windows_index"};
   bool m_basic_auth {false};
 
 public:
